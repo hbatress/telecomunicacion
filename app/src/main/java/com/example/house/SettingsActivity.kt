@@ -20,16 +20,18 @@ class SettingsActivity : ComponentActivity() {
         Log.d("SettingsActivity", "onCreate called")
         setContent {
             HouseTheme {
-                SettingsScreen(context = this)
+                MainScaffold(context = this, currentActivity = SettingsActivity::class.java) { innerPadding ->
+                    SettingsScreen(modifier = Modifier.padding(innerPadding), context = this)
+                }
             }
         }
     }
 }
 
 @Composable
-fun SettingsScreen(context: Context) {
+fun SettingsScreen(modifier: Modifier = Modifier, context: Context) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,

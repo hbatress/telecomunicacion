@@ -28,6 +28,11 @@
         <activity android:name=".HomeActivity" />
         <activity android:name=".CreateAccountActivity" />
         <activity android:name=".SettingsActivity" />
+        <activity android:name=".ProfileActivity" />
+        <activity android:name=".AddDeviceActivity" />
+        <activity android:name=".CameraActivity" />
+        <activity android:name=".TemperatureSensorActivity" />
+        <activity android:name=".AirQualityMonitorActivity" />
     </application>
 
 </manifest>

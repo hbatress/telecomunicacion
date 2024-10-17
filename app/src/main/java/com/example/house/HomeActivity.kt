@@ -1,3 +1,4 @@
+// HomeActivity.kt
 package com.example.house
 
 import android.content.Context
@@ -8,6 +9,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,13 +22,11 @@ import androidx.compose.ui.Alignment
 import com.example.house.ui.theme.HouseTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.compose.ui.graphics.vector.ImageVector
 import android.widget.Toast
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,7 +36,7 @@ class HomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             HouseTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                MainScaffold(context = this, currentActivity = HomeActivity::class.java) { innerPadding ->
                     HomeScreen(modifier = Modifier.padding(innerPadding), context = this)
                 }
             }
@@ -46,7 +46,7 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, context: Context) {
-    var devices by remember { mutableStateOf(listOf<String>()) }
+    var devices by remember { mutableStateOf(listOf<Device>()) }
 
     LaunchedEffect(Unit) {
         val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
@@ -79,41 +79,24 @@ fun HomeScreen(modifier: Modifier = Modifier, context: Context) {
 
         // Cuerpo
         Box(modifier = Modifier.weight(1f)) {
-            DeviceList(devices = devices)
+            DeviceList(devices = devices, context = context)
         }
 
         // Línea divisoria
         HorizontalDivider(color = Color.Gray, thickness = 1.dp)
-
-        // Pie de página
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            FooterItem(icon = Icons.Default.Home, label = "Mi hogar")
-            FooterItem(icon = Icons.Default.Add, label = "Agregar")
-            FooterItem(icon = Icons.Default.Settings, label = "Ajustes", onClick = {
-                Log.d("HomeScreen", "Settings button clicked")
-                val intent = Intent(context, SettingsActivity::class.java)
-                context.startActivity(intent)
-            })
-            FooterItem(icon = Icons.Default.Person, label = "Perfil")
-        }
     }
 }
 
 @Composable
-fun DeviceList(devices: List<String>) {
+fun DeviceList(devices: List<Device>, context: Context) {
     if (devices.isEmpty()) {
         Text(text = "Sin dispositivos agregados", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
     } else {
         Column {
             devices.forEach { device ->
-                val image: Painter = when (device) {
+                val image: Painter = when (device.nombre) {
                     "Cámara de Vigilancia" -> painterResource(id = R.drawable.camera)
                     "Sensor de Temperatura" -> painterResource(id = R.drawable.thermostat)
-                    "Sensor de Temperatura Exterior" -> painterResource(id = R.drawable.thermostat)
                     "Monitor de Calidad del Aire" -> painterResource(id = R.drawable.air_quality)
                     else -> painterResource(id = R.drawable.ruptura)
                 }
@@ -121,33 +104,33 @@ fun DeviceList(devices: List<String>) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp)),
+                        .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp))
+                        .clickable {
+                            when (device.nombre) {
+                                "Cámara de Vigilancia" -> context.startCameraActivity(device.id)
+                                "Sensor de Temperatura" -> context.startTemperatureSensorActivity(device.id)
+                                "Monitor de Calidad del Aire" -> context.startAirQualityMonitorActivity(device.id)
+                            }
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
                         painter = image,
-                        contentDescription = device,
+                        contentDescription = device.nombre,
                         modifier = Modifier.size(48.dp).padding(8.dp),
                         contentScale = ContentScale.Crop
                     )
-                    Text(text = device, style = MaterialTheme.typography.bodyLarge)
+                    Column(modifier = Modifier.padding(start = 8.dp)) {
+                        Text(text = device.nombre, style = MaterialTheme.typography.bodyLarge)
+                        Text(text = "Serie: ${device.id}", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun FooterItem(icon: ImageVector, label: String, onClick: () -> Unit = {}) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        IconButton(onClick = onClick) {
-            Icon(imageVector = icon, contentDescription = label, modifier = Modifier.size(48.dp))
-        }
-        Text(text = label, style = MaterialTheme.typography.bodySmall)
-    }
-}
-
-fun fetchDevices(userId: String, context: Context, onDevicesFetched: (List<String>) -> Unit) {
+fun fetchDevices(userId: String, context: Context, onDevicesFetched: (List<Device>) -> Unit) {
     val call = RetrofitClient.instance.getDevices(userId)
     call.enqueue(object : Callback<DeviceResponse> {
         override fun onResponse(call: Call<DeviceResponse>, response: Response<DeviceResponse>) {
@@ -165,4 +148,6 @@ fun fetchDevices(userId: String, context: Context, onDevicesFetched: (List<Strin
     })
 }
 
-data class DeviceResponse(val dispositivos: List<String>)
+data class DeviceResponse(val dispositivos: List<Device>)
+
+data class Device(val id: String, val nombre: String)
