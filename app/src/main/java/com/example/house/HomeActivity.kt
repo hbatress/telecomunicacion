@@ -7,14 +7,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.house.ui.theme.HouseTheme
 
@@ -33,67 +34,120 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            IconButtonWithBorder(
-                icon = Icons.Filled.Camera,
-                contentDescription = "Camera",
-                onClick = { /* Navegar a la página de cámara */ }
+            Column(
+                modifier = Modifier
+                    .weight(0.8f)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(48.dp) // Increased spacing
+                ) {
+                    ImageButtonWithBorder(
+                        imageRes = R.drawable.camera,
+                        contentDescription = "Camera",
+                        onClick = { /* Navigate to camera page */ },
+                        size = 120.dp,
+                        iconSize = 60.dp
+                    )
+                    ImageButtonWithBorder(
+                        imageRes = R.drawable.thermostat,
+                        contentDescription = "Thermometer",
+                        onClick = { /* Navigate to thermometer page */ },
+                        size = 120.dp,
+                        iconSize = 60.dp
+                    )
+                }
+                Spacer(modifier = Modifier.height(32.dp)) // Added vertical spacing
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(48.dp) // Increased spacing
+                ) {
+                    ImageButtonWithBorder(
+                        imageRes = R.drawable.air_quality,
+                        contentDescription = "Air Quality",
+                        onClick = { /* Navigate to air quality page */ },
+                        size = 120.dp,
+                        iconSize = 60.dp
+                    )
+                    ImageButtonWithBorder(
+                        imageRes = R.drawable.foco,
+                        contentDescription = "Foco",
+                        onClick = { /* Navigate to foco page */ },
+                        size = 120.dp,
+                        iconSize = 60.dp
+                    )
+                }
+            }
+            HorizontalDivider(
+                color = Color.Gray,
+                thickness = 1.dp,
+                modifier = Modifier.padding(vertical = 16.dp)
             )
-            IconButtonWithBorder(
-                icon = Icons.Filled.Thermostat,
-                contentDescription = "Thermometer",
-                onClick = { /* Navegar a la página de termómetro */ }
+            Row(
+                modifier = Modifier
+                    .weight(0.2f)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center, // Centered horizontally
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ImageButtonWithBorder(
+                    imageRes = R.drawable.add_equipment,
+                    contentDescription = "Add Equipment",
+                    onClick = { /* Navigate to add equipment page */ },
+                    size = 96.dp,
+                    iconSize = 48.dp
+                )
+                Spacer(modifier = Modifier.width(32.dp)) // Added spacing between buttons
+                ImageButtonWithBorder(
+                    imageRes = R.drawable.settings,
+                    contentDescription = "Settings",
+                    onClick = { /* Navigate to settings page */ },
+                    size = 96.dp,
+                    iconSize = 48.dp
+                )
+            }
+        }
+        IconButton(
+            onClick = { /* Navigate to notifications page */ },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+                .size(48.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.notification),
+                contentDescription = "Notification"
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            IconButtonWithBorder(
-                icon = Icons.Filled.Air,
-                contentDescription = "Air Quality",
-                onClick = { /* Navegar a la página de calidad de aire */ }
-            )
-            IconButtonWithBorder(
-                icon = Icons.Filled.Add,
-                contentDescription = "Add Equipment",
-                onClick = { /* Navegar a la página para agregar equipos */ }
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        IconButtonWithBorder(
-            icon = Icons.Filled.Settings,
-            contentDescription = "Settings",
-            onClick = { /* Navegar a la página de ajustes */ }
-        )
     }
 }
 
 @Composable
-fun IconButtonWithBorder(
-    icon: ImageVector,
+fun ImageButtonWithBorder(
+    imageRes: Int,
     contentDescription: String?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    size: Dp,
+    iconSize: Dp
 ) {
     IconButton(
         onClick = onClick,
         modifier = Modifier
-            .size(96.dp)  // Incrementar el tamaño del botón
+            .size(size)
             .border(BorderStroke(2.dp, Color.Gray), shape = CircleShape)
     ) {
-        Icon(
-            imageVector = icon,
+        Image(
+            painter = painterResource(id = imageRes),
             contentDescription = contentDescription,
-            modifier = Modifier.size(48.dp)  // Incrementar el tamaño del ícono
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(iconSize)
         )
     }
 }
