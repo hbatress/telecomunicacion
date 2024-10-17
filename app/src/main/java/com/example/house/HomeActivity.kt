@@ -7,17 +7,23 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.house.ui.theme.HouseTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Person
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,120 +40,51 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
+    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+        // Encabezado
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(0.8f)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            Text(text = "Todos los dispositivos", style = MaterialTheme.typography.headlineSmall)
+            IconButton(
+                onClick = { /* Navigate to notifications page */ },
+                modifier = Modifier.size(48.dp)
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(48.dp) // Increased spacing
-                ) {
-                    ImageButtonWithBorder(
-                        imageRes = R.drawable.camera,
-                        contentDescription = "Camera",
-                        onClick = { /* Navigate to camera page */ },
-                        size = 120.dp,
-                        iconSize = 60.dp
-                    )
-                    ImageButtonWithBorder(
-                        imageRes = R.drawable.thermostat,
-                        contentDescription = "Thermometer",
-                        onClick = { /* Navigate to thermometer page */ },
-                        size = 120.dp,
-                        iconSize = 60.dp
-                    )
-                }
-                Spacer(modifier = Modifier.height(32.dp)) // Added vertical spacing
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(48.dp) // Increased spacing
-                ) {
-                    ImageButtonWithBorder(
-                        imageRes = R.drawable.air_quality,
-                        contentDescription = "Air Quality",
-                        onClick = { /* Navigate to air quality page */ },
-                        size = 120.dp,
-                        iconSize = 60.dp
-                    )
-                    ImageButtonWithBorder(
-                        imageRes = R.drawable.foco,
-                        contentDescription = "Foco",
-                        onClick = { /* Navigate to foco page */ },
-                        size = 120.dp,
-                        iconSize = 60.dp
-                    )
-                }
-            }
-            HorizontalDivider(
-                color = Color.Gray,
-                thickness = 1.dp,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-            Row(
-                modifier = Modifier
-                    .weight(0.2f)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center, // Centered horizontally
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ImageButtonWithBorder(
-                    imageRes = R.drawable.add_equipment,
-                    contentDescription = "Add Equipment",
-                    onClick = { /* Navigate to add equipment page */ },
-                    size = 96.dp,
-                    iconSize = 48.dp
-                )
-                Spacer(modifier = Modifier.width(32.dp)) // Added spacing between buttons
-                ImageButtonWithBorder(
-                    imageRes = R.drawable.settings,
-                    contentDescription = "Settings",
-                    onClick = { /* Navigate to settings page */ },
-                    size = 96.dp,
-                    iconSize = 48.dp
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notification"
                 )
             }
         }
-        IconButton(
-            onClick = { /* Navigate to notifications page */ },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-                .size(48.dp)
+
+        // Cuerpo (pendiente de implementación)
+        Box(modifier = Modifier.weight(1f)) {
+            // Aquí va el contenido del cuerpo
+        }
+
+        // Línea divisoria
+        Divider(color = Color.Gray, thickness = 1.dp)
+
+        // Pie de página
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.notification),
-                contentDescription = "Notification"
-            )
+            FooterItem(icon = Icons.Default.Home, label = "Mi hogar")
+            FooterItem(icon = Icons.Default.Add, label = "Agregar")
+            FooterItem(icon = Icons.Default.Settings, label = "Ajustes")
+            FooterItem(icon = Icons.Default.Person, label = "Perfil")
         }
     }
 }
 
 @Composable
-fun ImageButtonWithBorder(
-    imageRes: Int,
-    contentDescription: String?,
-    onClick: () -> Unit,
-    size: Dp,
-    iconSize: Dp
-) {
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier
-            .size(size)
-            .border(BorderStroke(2.dp, Color.Gray), shape = CircleShape)
-    ) {
-        Image(
-            painter = painterResource(id = imageRes),
-            contentDescription = contentDescription,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.size(iconSize)
-        )
+fun FooterItem(icon: ImageVector, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(imageVector = icon, contentDescription = label, modifier = Modifier.size(48.dp))
+        Text(text = label, style = MaterialTheme.typography.bodySmall)
     }
 }
