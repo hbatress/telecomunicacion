@@ -114,8 +114,15 @@ private fun login(
         override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
             if (response.isSuccessful) {
                 val message = response.body()?.message ?: "Error desconocido"
+                val userId = response.body()?.userId ?: ""
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                 if (message == "Usuario autenticado con éxito") {
+                    // Almacenar el ID en SharedPreferences
+                    val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putString("user_id", userId)
+                        apply()
+                    }
                     onLoginSuccess()
                 }
             } else {

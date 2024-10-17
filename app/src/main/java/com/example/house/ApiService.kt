@@ -5,7 +5,10 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 data class LoginRequest(val correo: String, val contrasena: String)
-data class LoginResponse(val message: String)
+data class LoginResponse(
+    val message: String,
+    val userId: String
+)
 
 interface ApiService {
     @POST("/login")
