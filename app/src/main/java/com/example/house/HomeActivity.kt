@@ -4,13 +4,13 @@ package com.example.house
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -22,14 +22,6 @@ import androidx.compose.ui.Alignment
 import com.example.house.ui.theme.HouseTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import androidx.compose.ui.graphics.vector.ImageVector
-import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.foundation.shape.RoundedCornerShape
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,18 +38,6 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, context: Context) {
-    var devices by remember { mutableStateOf(listOf<Device>()) }
-
-    LaunchedEffect(Unit) {
-        val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getString("user_id", "") ?: ""
-        if (userId.isNotEmpty()) {
-            fetchDevices(userId, context) { fetchedDevices ->
-                devices = fetchedDevices
-            }
-        }
-    }
-
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
         // Encabezado
         Row(
@@ -78,8 +58,8 @@ fun HomeScreen(modifier: Modifier = Modifier, context: Context) {
         }
 
         // Cuerpo
-        Box(modifier = Modifier.weight(1f)) {
-            DeviceList(devices = devices, context = context)
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            IconButtonGrid(context = context)
         }
 
         // Línea divisoria
@@ -88,66 +68,72 @@ fun HomeScreen(modifier: Modifier = Modifier, context: Context) {
 }
 
 @Composable
-fun DeviceList(devices: List<Device>, context: Context) {
-    if (devices.isEmpty()) {
-        Text(text = "Sin dispositivos agregados", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(16.dp))
-    } else {
-        Column {
-            devices.forEach { device ->
-                val image: Painter = when (device.nombre) {
-                    "Cámara de Vigilancia" -> painterResource(id = R.drawable.camera)
-                    "Sensor de Temperatura" -> painterResource(id = R.drawable.thermostat)
-                    "Monitor de Calidad del Aire" -> painterResource(id = R.drawable.air_quality)
-                    else -> painterResource(id = R.drawable.ruptura)
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .border(BorderStroke(1.dp, Color.Gray), shape = RoundedCornerShape(8.dp))
-                        .clickable {
-                            when (device.nombre) {
-                                "Cámara de Vigilancia" -> context.startCameraActivity(device.id)
-                                "Sensor de Temperatura" -> context.startTemperatureSensorActivity(device.id)
-                                "Monitor de Calidad del Aire" -> context.startAirQualityMonitorActivity(device.id)
-                            }
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = image,
-                        contentDescription = device.nombre,
-                        modifier = Modifier.size(48.dp).padding(8.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                    Column(modifier = Modifier.padding(start = 8.dp)) {
-                        Text(text = device.nombre, style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "Serie: ${device.id}", style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
+fun IconButtonGrid(context: Context) {
+    val items = listOf(
+        Triple(painterResource(id = R.drawable.camera), "Cámara de Vigilancia", { startCameraActivity(context, "camera_id") }),
+        Triple(painterResource(id = R.drawable.thermostat), "Sensor de Temperatura", { startTemperatureSensorActivity(context, "temperature_id") }),
+        Triple(painterResource(id = R.drawable.air_quality), "Monitor de Calidad del Aire", { startAirQualityMonitorActivity(context, "air_quality_id") })
+    )
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        items.forEachIndexed { index, item ->
+            val backgroundColor = if (index % 2 == 0) Color.LightGray else Color.White
+            IconButtonWithNavigation(
+                context = context,
+                icon = item.first,
+                contentDescription = item.second,
+                onClick = item.third,
+                backgroundColor = backgroundColor
+            )
         }
     }
 }
 
-fun fetchDevices(userId: String, context: Context, onDevicesFetched: (List<Device>) -> Unit) {
-    val call = RetrofitClient.instance.getDevices(userId)
-    call.enqueue(object : Callback<DeviceResponse> {
-        override fun onResponse(call: Call<DeviceResponse>, response: Response<DeviceResponse>) {
-            if (response.isSuccessful) {
-                val devices = response.body()?.dispositivos ?: emptyList()
-                onDevicesFetched(devices)
-            } else {
-                Toast.makeText(context, "Error en la respuesta del servidor", Toast.LENGTH_SHORT).show()
-            }
+@Composable
+fun IconButtonWithNavigation(
+    context: Context,
+    icon: Painter,
+    contentDescription: String,
+    onClick: () -> Unit,
+    backgroundColor: Color
+) {
+    Box(
+        modifier = Modifier
+            .padding(8.dp)
+            .background(color = backgroundColor, shape = RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = icon,
+                contentDescription = contentDescription,
+                modifier = Modifier.size(48.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(text = contentDescription, style = MaterialTheme.typography.bodyLarge)
         }
-
-        override fun onFailure(call: Call<DeviceResponse>, t: Throwable) {
-            Toast.makeText(context, "Error en la conexión: ${t.message}", Toast.LENGTH_SHORT).show()
-        }
-    })
+    }
 }
 
-data class DeviceResponse(val dispositivos: List<Device>)
+fun startCameraActivity(context: Context, deviceId: String) {
+    val intent = Intent(context, CameraActivity::class.java).apply {
+        putExtra("device_id", deviceId)
+    }
+    context.startActivity(intent)
+}
 
-data class Device(val id: String, val nombre: String)
+fun startTemperatureSensorActivity(context: Context, deviceId: String) {
+    val intent = Intent(context, TemperatureSensorActivity::class.java).apply {
+        putExtra("device_id", deviceId)
+    }
+    context.startActivity(intent)
+}
+
+fun startAirQualityMonitorActivity(context: Context, deviceId: String) {
+    val intent = Intent(context, AirQualityMonitorActivity::class.java).apply {
+        putExtra("device_id", deviceId)
+    }
+    context.startActivity(intent)
+}

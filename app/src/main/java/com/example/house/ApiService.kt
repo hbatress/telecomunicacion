@@ -22,4 +22,9 @@ interface ApiService {
 
     @GET("dispositivos/{id}")
     fun getDevices(@Path("id") userId: String): Call<DeviceResponse>
+
+    
+    @GET("video/{id}")
+    fun getVideo(@Path("id") id: String): Call<VideoResponse>
+
 }

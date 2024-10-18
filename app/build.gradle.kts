@@ -85,4 +85,10 @@ dependencies {
     implementation ("androidx.compose.material:material-icons-core:1.0.5")
     implementation ("androidx.compose.material:material-icons-extended:1.0.5")
 
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation ("org.tensorflow:tensorflow-lite:2.7.0")
+implementation ("org.tensorflow:tensorflow-lite-support:0.1.0")
+
 }
