@@ -6,23 +6,30 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
-import com.example.house.ui.theme.HouseTheme
+import androidx.compose.ui.graphics.Color
 
 class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d("SettingsActivity", "onCreate called")
         setContent {
-            HouseTheme {
-                MainScaffold(context = this, currentActivity = SettingsActivity::class.java) { innerPadding ->
+            MainScaffold(context = this, currentActivity = SettingsActivity::class.java) { _ ->
+                Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFecf0f1)) // Set the background color here
+                ) { innerPadding ->
+
                     SettingsScreen(modifier = Modifier.padding(innerPadding), context = this)
                 }
+
             }
         }
     }
@@ -33,6 +40,7 @@ fun SettingsScreen(modifier: Modifier = Modifier, context: Context) {
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(Color(0xFFecf0f1)) // Set the background color here
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally

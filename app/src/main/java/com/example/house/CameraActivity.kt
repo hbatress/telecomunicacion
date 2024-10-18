@@ -43,8 +43,8 @@ class CameraActivity : ComponentActivity() {
         }
         setContent {
             HouseTheme {
-                MainScaffold(context = this, currentActivity = CameraActivity::class.java) { innerPadding ->
-                    CameraScreen(modifier = Modifier.padding(innerPadding), deviceId = deviceId)
+                Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    CameraScreen(modifier = Modifier, deviceId = deviceId)
                 }
             }
         }
@@ -86,7 +86,7 @@ fun CameraScreen(modifier: Modifier = Modifier, deviceId: String?) {
                 errorMessage = "Device ID is null"
                 Log.e("CameraScreen", "Device ID is null")
             }
-            delay(2000) // Esperar 2 segundos antes de la siguiente solicitud
+            delay(800) // Esperar 2 segundos antes de la siguiente solicitud
         }
     }
 

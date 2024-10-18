@@ -1,4 +1,3 @@
-// HomeActivity.kt
 package com.example.house
 
 import android.content.Context
@@ -6,19 +5,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.Image
 import com.example.house.ui.theme.HouseTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -29,8 +28,16 @@ class HomeActivity : ComponentActivity() {
         setContent {
             HouseTheme {
                 MainScaffold(context = this, currentActivity = HomeActivity::class.java) { innerPadding ->
-                    HomeScreen(modifier = Modifier.padding(innerPadding), context = this)
+                    Scaffold(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFFecf0f1)) // Set the background color here
+                    ) { innerPadding ->
+
+                        HomeScreen(modifier = Modifier.padding(innerPadding), context = this)
+                    }
                 }
+
             }
         }
     }
@@ -38,52 +45,54 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, context: Context) {
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
-        // Encabezado
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Todos los dispositivos", style = MaterialTheme.typography.headlineSmall)
-            IconButton(
-                onClick = { /* Navigate to notifications page */ },
-                modifier = Modifier.size(48.dp)
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(Color(0xFFecf0f1)) // Set the background color here
+    ) {
+        Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notification"
-                )
+                Text(text = "All Devices", style = MaterialTheme.typography.headlineSmall)
+                IconButton(
+                    onClick = { /* Navigate to notifications page */ },
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Notifications,
+                        contentDescription = "Notification"
+                    )
+                }
+            }
+
+            // Body
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                IconButtonGrid(context = context)
             }
         }
-
-        // Cuerpo
-        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            IconButtonGrid(context = context)
-        }
-
-        // Línea divisoria
-        HorizontalDivider(color = Color.Gray, thickness = 1.dp)
     }
 }
 
 @Composable
 fun IconButtonGrid(context: Context) {
-    val items = listOf(
-        Triple(painterResource(id = R.drawable.camera), "Cámara de Vigilancia", { startCameraActivity(context, "camera_id") }),
-        Triple(painterResource(id = R.drawable.thermostat), "Sensor de Temperatura", { startTemperatureSensorActivity(context, "temperature_id") }),
-        Triple(painterResource(id = R.drawable.air_quality), "Monitor de Calidad del Aire", { startAirQualityMonitorActivity(context, "air_quality_id") })
+    val items: List<Triple<Painter, String, () -> Unit>> = listOf(
+        Triple(painterResource(id = R.drawable.camera), "Surveillance Camera", { startCameraActivity(context, "camera_id") }),
+        Triple(painterResource(id = R.drawable.thermostat), "Temperature Sensor", { startTemperatureSensorActivity(context, "temperature_id") }),
+        Triple(painterResource(id = R.drawable.air_quality), "Air Quality Monitor", { startAirQualityMonitorActivity(context, "air_quality_id") })
     )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        items.forEachIndexed { index, item ->
-            val backgroundColor = if (index % 2 == 0) Color.LightGray else Color.White
+        items.forEach { item ->
             IconButtonWithNavigation(
                 context = context,
                 icon = item.first,
                 contentDescription = item.second,
                 onClick = item.third,
-                backgroundColor = backgroundColor
+                backgroundColor = Color.White // Set background color to white
             )
         }
     }

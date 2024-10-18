@@ -7,6 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import com.example.house.ui.theme.HouseTheme
 
@@ -18,8 +20,8 @@ class AirQualityMonitorActivity : ComponentActivity() {
         deviceId = intent.getStringExtra("device_id")
         setContent {
             HouseTheme {
-                MainScaffold(context = this, currentActivity = AirQualityMonitorActivity::class.java) { innerPadding ->
-                    AirQualityMonitorScreen(modifier = Modifier.padding(innerPadding), deviceId = deviceId)
+                Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    AirQualityMonitorScreen(modifier = Modifier, deviceId = deviceId)
                 }
             }
         }
