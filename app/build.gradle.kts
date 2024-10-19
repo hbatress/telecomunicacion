@@ -90,5 +90,6 @@ dependencies {
 
     implementation ("org.tensorflow:tensorflow-lite:2.7.0")
 implementation ("org.tensorflow:tensorflow-lite-support:0.1.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
 
 }
